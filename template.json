@@ -1,0 +1,117 @@
+{
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "hostingPlanName": {
+            "type": "string"
+        },        
+        "location": {
+            "type": "string"
+        },
+        "appInsightLocation":{
+            "type": "string"
+        },
+        "sku": {
+            "type": "string"
+        },
+        "skuCode": {
+            "type": "string"
+        },        
+        "serverFarmResourceGroup": {
+            "type": "string"
+        },
+        "phpVersion": {
+            "type": "string"
+        },
+        "javaVersion": {
+            "type": "string"
+        },
+        "javaContainer": {
+            "type": "string"
+        },
+        "javaContainerVersion": {
+            "type": "string"
+        },        
+        "subscriptionId": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2016-09-01",
+            "name": "[parameters('hostingPlanName')]",
+            "type": "Microsoft.Web/serverfarms",
+            "location": "[parameters('location')]",
+            "tags": {
+            "displayName": "HostingPlan"
+            },
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            },
+            "properties": {
+                "name": "[parameters('hostingPlanName')]"               
+            }
+        },        
+        {
+            "name": "[parameters('name')]",
+            "type": "Microsoft.Web/sites",
+            "location": "[parameters('location')]",
+            "tags": {
+                "[concat('hidden-related:', '/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+            },
+            "dependsOn": [                
+                "[resourceId('microsoft.insights/components/', parameters('name'))]"
+            ],
+            "resources": [
+                {
+                "apiVersion": "2015-08-01",
+                "name": "Microsoft.ApplicationInsights.AzureWebSites",
+                "type": "siteextensions",
+                "dependsOn": [
+                    "[resourceId('Microsoft.Web/Sites', parameters('name'))]"
+                ],
+                "properties": {
+                }
+                }                
+            ],
+            "properties": {
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                            "value": "[reference(resourceId('microsoft.insights/components/', parameters('name')), '2015-05-01').InstrumentationKey]"
+                        },
+                        {
+                            "name": "WEBSITE_NODE_DEFAULT_VERSION",
+                            "value": "6.9.1"
+                        }
+                    ],
+                    "phpVersion" : "[parameters('phpVersion')]",
+                    "javaVersion" : "[parameters('javaVersion')]",
+                    "javaContainer" : "[parameters('javaContainer')]",
+                    "javaContainerVersion" : "[parameters('javaContainerVersion')]"                
+                },
+                "name": "[parameters('name')]",                
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"               
+            },
+            "apiVersion": "2016-03-01"
+        },        
+        {
+            "apiVersion": "2015-05-01",
+            "name": "[parameters('name')]",
+            "type": "microsoft.insights/components",
+            "location": "[parameters('appInsightLocation')]",
+            "tags": {
+                "[concat('hidden-link:', resourceGroup().id, '/providers/Microsoft.Web/sites/', parameters('name'))]": "Resource"
+            },
+            "properties": {
+                "ApplicationId": "[parameters('name')]",
+                "Request_Source": "IbizaWebAppExtensionCreate"
+            }
+        }
+    ],
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0"
+}

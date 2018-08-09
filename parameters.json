@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": ""
+        },
+        "hostingPlanName": {
+            "value": "NewAppServicePlan"
+        },        
+        "location": {
+            "value": "East US"
+        },
+        "appInsightLocation": {
+            "value": "East US"
+        },
+        "sku": {
+            "value": "Standard"
+        },        
+        "serverFarmResourceGroup": {
+            "value": ""
+        },
+        "phpVersion": {
+            "value": "5.6"
+        },
+        "javaVersion": {
+            "value": ""
+        },
+        "javaContainer": {
+            "value": ""
+        },
+        "javaContainerVersion": {
+            "value": ""
+        },        
+        "skuCode": {
+            "value": "S1"
+        },
+        "subscriptionId": {
+            "value": ""
+        }
+    }
+}
